@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="kanzasCity" class="com.netcracker.cities.City" scope="prototype">
+        <constructor-arg ref="goodMayor"/>
+        <!--CI list-->
+        <constructor-arg>
+            <list>
+                <value>Church</value>
+                <value>City Hall</value>
+                <value>Citizen Houses</value>
+                <value>Alcohol market</value>
+                <value>New School</value>
+                <value>New Hospital</value>
+            </list>
+        </constructor-arg>
+        <property name="happyPeoplePercent" value="85"/>
+        <!--SI set and map-->
+        <property name="citizens">
+            <set>
+                <value>Priest</value>
+                <value>Mayor</value>
+                <value>Alcohol seller</value>
+                <value>Other civilians</value>
+            </set>
+        </property>
+        <property name="cars">
+            <map>
+                <entry key="777" value="Priest"/>
+                <entry key="258" value="Mayor"/>
+                <entry key="123" value="Alcohol seller"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="springfieldCity" class="com.netcracker.cities.City" scope="prototype">
+        <constructor-arg ref="badMayor"/>
+        <constructor-arg>
+            <list>
+                <value>Church</value>
+                <value>City Hall</value>
+                <value>Homes of sad citizens</value>
+            </list>
+        </constructor-arg>
+        <property name="happyPeoplePercent" value="27"/>
+        <property name="citizens">
+            <set>
+                <value>Priest</value>
+                <value>Mayor</value>
+                <value>Unemployed</value>
+                <value>Other civilians</value>
+            </set>
+        </property>
+        <property name="cars">
+            <map>
+                <entry key="228" value="Priest"/>
+                <entry key="777" value="Mayor"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="goodMayor" class="com.netcracker.mayors.GoodMayor" scope="prototype">
+        <constructor-arg value="Goodman"/>
+    </bean>
+    <bean id="badMayor" class="com.netcracker.mayors.BadMayor" scope="prototype">
+        <constructor-arg value="ClearEvil"/>
+    </bean>
+
+    <!--Inheritance-->
+    <bean id="badMayorSon" class="com.netcracker.mayors.BadMayorSon" scope="prototype" parent="badMayor">
+    </bean>
+    <bean id="futureSpringfieldCity" class="com.netcracker.cities.City" parent="springfieldCity">
+        <property name="mayor" ref="badMayorSon"/>
+        <property name="happyPeoplePercent" value="11"/>
+    </bean>
+
+
+    <!--SpEL-->
+
+    <bean id="idealCity" class="com.netcracker.cities.IdealCity"/>
+
+    <bean id="idealCityPrototype" class="com.netcracker.cities.City" scope="prototype">
+        <constructor-arg value="#{idealCity.mayor}"/>
+        <constructor-arg value="#{idealCity.houses}"/>
+        <property name="happyPeoplePercent" value="#{idealCity.happyPeoplePercent}"/>
+        <property name="citizens" value="#{idealCity.citizens}"/>
+        <property name="cars" value="#{idealCity.cars}"/>
+    </bean>
+
+    <!--Autowiring-->
+    <bean id="car" class="com.netcracker.autowiring.Car"  autowire="byType">
+        <property name="model" value="Toyota"/>
+        <property name="number" value="666"/>
+    </bean>
+
+
+    <bean id="engine" class="com.netcracker.autowiring.Engine">
+        <property name="engineModel" value="HyperDrive"/>
+    </bean>
+
+    <bean id="carCons" class="com.netcracker.autowiring.Car" autowire="byType">
+        <property name="model" value="Honda"/>
+        <property name="number" value="315"/>
+    </bean>
+
+    <bean id="mayorCar" class="com.netcracker.autowiring.MayorCar" autowire="byName"/>
+
+    <bean id="mayorCarConstr" class="com.netcracker.autowiring.MayorCar" autowire="constructor"/>
+
+
+    <!--Factories-->
+    <bean id="mayorFactory" class="com.netcracker.mayors.MayorFactory"/>
+
+    <bean id="factorizedBadMayor" factory-bean="mayorFactory" factory-method="createBadMayor"/>
+    <bean id="factorizedGoodMayor" factory-bean="mayorFactory" factory-method="createGoodMayor"/>
+
+    <!--lookupmethods-->
+<bean id="lookup" class="com.netcracker.mayors.LookupClass">
+    <lookup-method name="createGoodMayor" bean="goodMayor"/>
+    <lookup-method name="createBadMayor" bean="badMayor"/>
+</bean>
+
+</beans>
